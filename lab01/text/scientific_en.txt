@@ -1,0 +1,3 @@
+The NPW matched filter is a linear observer model whose template is the difference between the expected signal and the expected background. 
+Under the assumption that the noise is wide-sense stationary within a small ROI, and that the system behaves in a quasi-linear fashion, the detectability index for the NPW observer was calculated via FFT. 
+The detectability index for the observer is calculated by use of the means and variances over an ensemble
