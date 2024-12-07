@@ -57,12 +57,12 @@ async def start_handler(message: types.Message):
     logger.info(f"Получена команда /start от пользователя {message.from_user.id}")
     await handle_start(message)
 
-# Обработчик команды /выбрать
-@router.message(Command("model"))
-async def choose_model_handler(message: types.Message):
-    button_gpt = KeyboardButton(text="GPT")
-    markup = ReplyKeyboardMarkup(keyboard=[[button_gpt]], resize_keyboard=True)
-    await message.answer("Выберите модель для общения:", reply_markup=markup)
+# # Обработчик команды /выбрать
+# @router.message(Command("model"))
+# async def choose_model_handler(message: types.Message):
+#     button_gpt = KeyboardButton(text="GPT")
+#     markup = ReplyKeyboardMarkup(keyboard=[[button_gpt]], resize_keyboard=True)
+#     await message.answer("Выберите модель для общения:", reply_markup=markup)
 
 # Обработчик выбора модели
 @router.message(lambda message: message.text.lower() in ["gpt"])
@@ -254,13 +254,28 @@ async def start_consultation(message: types.Message) -> None:
 @router.message(lambda message: "gpt" in message.text.lower() and user_consultation_state.get(message.from_user.id, False))
 async def choose_model(message: types.Message) -> None:
     # Сохраняем модель, выбранную пользователем
-    user_models[message.from_user.id] = "gpt"
+    if "gpt" in message.text.lower():
+        user_models[message.from_user.id] = "gpt"
+    elif "llama" in message.text.lower():
+        user_models[message.from_user.id] = "llama"
 
     # Убираем кнопки выбора модели и оставляем только кнопку "Выход"
     markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[KeyboardButton(text="Выход")]])
 
     # Сразу скрываем кнопки выбора модели и отправляем новый ответ
     await message.answer("Вы выбрали модель GPT. Теперь можете задавать вопросы. Для выхода нажмите 'Выход'.", reply_markup=markup)
+
+# Создаем разметку с кнопками выбора модели
+def create_model_selection_menu():
+    button_gpt = KeyboardButton(text="GPT")
+    button_llama = KeyboardButton(text="LLAMA")
+    button_exit = KeyboardButton(text="Выход")
+
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
+        [button_gpt, button_llama],
+        [button_exit]
+    ])
+    return markup
 
 # Обработчик текста запроса
 @router.message(lambda message: message.text.lower() not in ["начать консультацию", "выход"] and user_consultation_state.get(message.from_user.id, False))
