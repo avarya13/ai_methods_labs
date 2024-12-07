@@ -28,6 +28,29 @@ router = Router()
 user_models = {}
 user_consultation_state = {}
 
+# Главное меню с основными командами
+def create_main_menu():
+    # Кнопки главного меню
+    button_consultation = KeyboardButton(text="Консультация")
+    button_help = KeyboardButton(text="Помощь")
+    button_record = KeyboardButton(text="Записаться")
+
+    # Разметка с кнопками
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
+        [button_consultation],
+        [button_help, button_record]
+    ])
+
+    return markup
+
+
+# Обработчик для главного меню
+@router.message(lambda message: message.text.lower() in ["меню", "главное меню", "показать меню"])
+async def show_main_menu(message: types.Message):
+    # Отправляем пользователю главное меню
+    markup = create_main_menu()
+    await message.answer("Вы вернулись в главное меню. Выберите команду:", reply_markup=markup)
+
 # Обработчик команды /start
 @router.message(Command("start"))
 async def start_handler(message: types.Message):
@@ -183,23 +206,27 @@ async def confirm_appointment(message: types.Message, state: FSMContext):
         user_data = await state.get_data()
         await message.answer(f"Запись на прием подтверждена! {user_data['doctor']} на {user_data['date']} в {user_data['time']}.")
         await state.clear()  # Завершаем состояние
+        markup = create_main_menu()
+        await message.answer("Запись подтверждена. Выберите команду:", reply_markup=markup)
     elif confirmation == "отменить":
         await message.answer("Запись отменена. Для начала нового процесса записи нажмите 'Записаться'.")
         await state.clear()  # Завершаем состояние
+        markup = create_main_menu()
+        await message.answer("Вы вернулись в главное меню. Выберите команду:", reply_markup=markup)
     else:
         await message.answer("Неверный ответ. Пожалуйста, выберите 'Подтвердить' или 'Отменить'.")
 
 
-# # Общий обработчик для выхода
-# @router.message(state=AppointmentState.waiting_for_name)
-# @router.message(state=AppointmentState.waiting_for_phone)
-# @router.message(state=AppointmentState.waiting_for_doctor)
-# @router.message(state=AppointmentState.waiting_for_date)
-# @router.message(state=AppointmentState.waiting_for_time)
-# @router.message(state=AppointmentState.waiting_for_confirmation)
-# async def cancel_appointment(message: types.Message, state: FSMContext):
-#     await state.finish()  # Завершаем состояние
-#     await message.answer("Процесс записи был отменен.")
+# Обработчик для кнопки "Помощь"
+@router.message(lambda message: "помощь" in message.text.lower())
+async def handle_help_choice(message: types.Message) -> None:
+    help_text = "Вот список команд, которые я поддерживаю:\n"
+    help_text += "- 'Консультация' — Начать консультацию с моделью\n"
+    help_text += "- 'Записаться' — Записаться на консультацию\n"
+    help_text += "- 'Выход' — Выйти из текущего состояния\n"
+    markup = create_main_menu()
+
+    await message.answer(help_text, reply_markup=markup)
 
 # Обработчик выбора консультации
 @router.message(lambda message: "консультация" in message.text.lower())
@@ -223,6 +250,18 @@ async def start_consultation(message: types.Message) -> None:
 
     await message.answer("Выберите модель для общения:", reply_markup=markup)
 
+# Обработчик для выбора модели
+@router.message(lambda message: "gpt" in message.text.lower() and user_consultation_state.get(message.from_user.id, False))
+async def choose_model(message: types.Message) -> None:
+    # Сохраняем модель, выбранную пользователем
+    user_models[message.from_user.id] = "gpt"
+
+    # Убираем кнопки выбора модели и оставляем только кнопку "Выход"
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[KeyboardButton(text="Выход")]])
+
+    # Сразу скрываем кнопки выбора модели и отправляем новый ответ
+    await message.answer("Вы выбрали модель GPT. Теперь можете задавать вопросы. Для выхода нажмите 'Выход'.", reply_markup=markup)
+
 # Обработчик текста запроса
 @router.message(lambda message: message.text.lower() not in ["начать консультацию", "выход"] and user_consultation_state.get(message.from_user.id, False))
 async def handle_user_query(message: types.Message) -> None:
@@ -245,7 +284,7 @@ async def handle_exit(message: types.Message) -> None:
     user_models.pop(message.from_user.id, None)
 
     # Создаем разметку с кнопкой "Консультация"
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[KeyboardButton(text="Консультация")]])
+    markup = create_main_menu()
 
     await message.answer("Вы вышли из консультации. Для начала новой консультации нажмите 'Консультация'.", reply_markup=markup)
 
