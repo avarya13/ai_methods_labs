@@ -19,7 +19,7 @@ except Exception as e:
     logger.error(f"Ошибка при загрузке моделей: {e}")
     raise
 
-def generate_response_with_model(model_name: str, text: str):
+def generate_response(model_name: str, text: str):
     try:
         if model_name == "gpt":
             return gpt_pipe(text)[0]['generated_text']
