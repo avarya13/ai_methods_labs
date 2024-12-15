@@ -19,5 +19,5 @@ def create_main_menu():
     """Создание клавиатуры для главного меню"""
     button_consultation = KeyboardButton(text="Consultation")
     button_help = KeyboardButton(text="Help")
-    button_record = KeyboardButton(text="Make an appointment")
+    button_record = KeyboardButton(text="Make Appointment")
     return ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[button_consultation], [button_help, button_record]])

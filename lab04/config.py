@@ -8,7 +8,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Устанавливаем переменную окружения для кэша HuggingFace
-HF_HOME = os.getenv("HF_HOME")
+HF_HOME = os.path.join(BASE_DIR, "huggingface_cache")
 if HF_HOME:
     os.environ["HF_HOME"] = HF_HOME
 
