@@ -14,7 +14,7 @@ try:
     gpt_pipe = pipeline("text-generation", model=GPT_MODEL)
     
     # Загружаем GPT4All модель
-    llama_pipe = GPT4All("falcon-7b-instruct.Q4_0.gguf")
+    llama_pipe = GPT4All(LLaMA_MODEL)
 
     logger.info("Модели успешно загружены")
 except Exception as e:
