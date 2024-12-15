@@ -6,7 +6,7 @@ def get_next_dates():
     return [(today + datetime.timedelta(days=i)).strftime('%d %B') for i in range(1, 4)]
 
 def create_doctors_keyboard():
-    doctors = ["Доктор 1", "Доктор 2", "Доктор 3"]
+    doctors = ["Therapist", "Surgeon", "Dentist"]
     return ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[KeyboardButton(text=doc)] for doc in doctors])
 
 def create_date_keyboard():
@@ -19,12 +19,12 @@ def create_time_keyboard():
 
 def create_confirmation_keyboard():
     return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, keyboard=[
-        [KeyboardButton(text="Подтвердить"), KeyboardButton(text="Отменить")]
+        [KeyboardButton(text="Confirm"), KeyboardButton(text="Cancel")]
     ])
 
 def create_consult_keyboard():
     return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, keyboard=[
-        [KeyboardButton(text="Начать консультацию")]
+        [KeyboardButton(text="Start consultation")]
     ])
 
 def create_model_keyboard():
@@ -34,7 +34,7 @@ def create_model_keyboard():
 
 def create_change_exit_keyboard():
     return ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, keyboard=[
-        [KeyboardButton(text="Выход"), KeyboardButton(text="Сменить модель")]
+        [KeyboardButton(text="Exit"), KeyboardButton(text="Change model")]
     ])
 
 

@@ -1,4 +1,5 @@
 from aiogram import Dispatcher
+from huggingface_hub import login
 from bot_init import dp, bot, logger
 from handlers import router
 

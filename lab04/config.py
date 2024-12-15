@@ -1,4 +1,3 @@
-# config.py
 import os
 from dotenv import load_dotenv
 
@@ -12,8 +11,8 @@ if HF_HOME:
 
 # Получение токенов и моделей из переменных окружения
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-LLaMA_MODEL = os.getenv("LLaMA_MODEL", "meta-llama/Llama-2-7b-chat-hf")
-GPT_MODEL = os.getenv("GPT_MODEL", "gpt2")
+LLaMA_MODEL = os.getenv("LLaMA_MODEL")
+GPT_MODEL = os.getenv("GPT_MODEL")
 
-if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN не установлен в .env")
+# if not BOT_TOKEN:
+#     raise ValueError("BOT_TOKEN не установлен в .env")

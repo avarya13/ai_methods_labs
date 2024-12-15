@@ -15,7 +15,8 @@ user_models = {}  # Словарь для хранения выбранных п
 
 # Главное меню с основными командами
 def create_main_menu():
-    button_consultation = KeyboardButton(text="Консультация")
-    button_help = KeyboardButton(text="Помощь")
-    button_record = KeyboardButton(text="Записаться")
+    """Создание клавиатуры для меню"""
+    button_consultation = KeyboardButton(text="Consultation")
+    button_help = KeyboardButton(text="Help")
+    button_record = KeyboardButton(text="Make an appointment")
     return ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[button_consultation], [button_help, button_record]])

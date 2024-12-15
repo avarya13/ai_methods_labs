@@ -2,31 +2,40 @@ import logging
 from config import LLaMA_MODEL, GPT_MODEL  
 
 from transformers import pipeline
+from gpt4all import GPT4All
 
-from huggingface_hub import login
-
-# login(token="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")
-
+# Настройка логгера
 logger = logging.getLogger(__name__)
 
 try:
     logger.info("Загрузка моделей...")
-    # llama_pipe = pipeline("text-generation", model=LLaMA_MODEL, tokenizer=LLaMA_MODEL)
+
+    # Загружаем GPT модель через HuggingFace Transformers
     gpt_pipe = pipeline("text-generation", model=GPT_MODEL)
-    llama_pipe = pipeline("text-generation", model=GPT_MODEL)
+    
+    # Загружаем GPT4All модель
+    llama_pipe = GPT4All("falcon-7b-instruct.Q4_0.gguf")
+
     logger.info("Модели успешно загружены")
 except Exception as e:
     logger.error(f"Ошибка при загрузке моделей: {e}")
     raise
 
 def generate_response(model_name: str, text: str):
+    """Получение ответа от модели"""
     try:
         if model_name == "gpt":
-            return gpt_pipe(text)[0]['generated_text']
+            return gpt_pipe(text, max_length=100, do_sample=True)[0]['generated_text']
         elif model_name == "llama":
-            return llama_pipe(text)[0]['generated_text']
+            with llama_pipe.chat_session():
+                response = llama_pipe.generate(text, max_tokens=100)
+            print(response)
+            return response.strip()  
         else:
-            return "Неизвестная модель"
+            return "Unknown model"
     except Exception as e:
         logger.error(f"Ошибка генерации ответа: {e}")
-        return "Произошла ошибка при генерации ответа"
+        return "An error occurred while generating the response"
+
+
+
