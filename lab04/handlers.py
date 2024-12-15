@@ -230,7 +230,7 @@ async def handle_user_query(message: types.Message) -> None:
     Генерирует ответ выбранной моделью.
     """
     selected_model = user_models.get(message.from_user.id, "gpt")
-    response = generate_response(selected_model, message.text)
+    response = await generate_response(selected_model, message.text)
 
     await message.answer(f"Response from the selected model ({selected_model})\n: {response}", reply_markup=utils.create_change_exit_keyboard())
 
